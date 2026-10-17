@@ -1,1 +1,516 @@
 # zach.github.io
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Schedule & Substitute System</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --danger: #dc2626;
+            --success: #16a34a;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.25rem; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .alert-error { background-color: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; }
+        .alert-success { background-color: #dcfce7; color: var(--success); border: 1px solid #86efac; }
+        .alert-info { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+        .schedule-list, .output-box {
+            background: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .schedule-item {
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        .schedule-item:last-child { border-bottom: none; }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs button {
+            flex: 1;
+            background: #e5e7eb;
+            color: var(--text-color);
+        }
+
+        .nav-tabs button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Professor Schedule & Substitute System</h1>
+        <p>Web-based translation of your C++ Scheduling Engine</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="active" onclick="switchTab('tab-add')">1. Add Professor/Schedule</button>
+        <button onclick="switchTab('tab-absence')">2. Record Absence</button>
+        <button onclick="switchTab('tab-view')">3. View All Schedules</button>
+    </div>
+
+    <!-- TAB 1: ADD PROFESSOR & SCHEDULE -->
+    <div id="tab-add" class="tab-content active card">
+        <h2>Add Professor & Schedule Entry</h2>
+        <div class="form-group">
+            <label for="profName">Professor Name:</label>
+            <input type="text" id="profName" placeholder="e.g., Dr. Smith">
+        </div>
+        <div class="form-group">
+            <label for="schedDay">Day:</label>
+            <select id="schedDay">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="schedType">Type:</label>
+            <select id="schedType" onchange="toggleSubjectInput()">
+                <option value="class">Class</option>
+                <option value="vacant">Vacant</option>
+            </select>
+        </div>
+        <div class="form-group" id="subjectGroup">
+            <label for="schedSubject">Subject Name:</label>
+            <input type="text" id="schedSubject" placeholder="e.g., Data Structures">
+        </div>
+        <div class="form-group">
+            <label for="startTime">Start Time (e.g., 7:00 AM, 13:00, or 2:30 PM):</label>
+            <input type="text" id="startTime" placeholder="7:00 AM">
+        </div>
+        <div class="form-group">
+            <label for="endTime">End Time:</label>
+            <input type="text" id="endTime" placeholder="8:30 AM">
+        </div>
+        <button onclick="handleAddSchedule()">Add Schedule Entry</button>
+        <div id="addMessage"></div>
+    </div>
+
+    <!-- TAB 2: RECORD ABSENCE -->
+    <div id="tab-absence" class="tab-content card">
+        <h2>Record Professor Absence & Find Substitutes</h2>
+        <div class="form-group">
+            <label for="absentProfName">Absent Professor Name:</label>
+            <input type="text" id="absentProfName" placeholder="e.g., Dr. Smith">
+        </div>
+        <div class="form-group">
+            <label for="absenceDay">Day of Absence:</label>
+            <select id="absenceDay">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="specificTimeCheck" onchange="toggleAbsenceTimeInputs()" style="width:auto;"> 
+                Absent only during a specific time range?
+            </label>
+        </div>
+        <div id="absenceTimeSection" style="display:none;">
+            <div class="form-group">
+                <label for="absenceStart">Absence Start Time:</label>
+                <input type="text" id="absenceStart" placeholder="9:00 AM">
+            </div>
+            <div class="form-group">
+                <label for="absenceEnd">Absence End Time:</label>
+                <input type="text" id="absenceEnd" placeholder="10:30 AM">
+            </div>
+            <div class="form-group">
+                <label for="absenceSubject">Subject Affected:</label>
+                <input type="text" id="absenceSubject" placeholder="Math 101">
+            </div>
+        </div>
+        <button onclick="handleRecordAbsence()">Check Substitute Professors</button>
+        <div id="absenceReport" class="output-box" style="display:none;"></div>
+    </div>
+
+    <!-- TAB 3: VIEW ALL SCHEDULES -->
+    <div id="tab-view" class="tab-content card">
+        <h2>All Professor Schedules</h2>
+        <button onclick="renderAllSchedules()" class="btn-secondary">Refresh Schedules</button>
+        <div id="allSchedulesContainer" class="schedule-list">
+            <p>No professors added yet.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- CORE JAVASCRIPT LOGIC (Mirrors C++ structures and functions) ---
+    let professors = [];
+
+    function trim(str) {
+        return str.trim();
+    }
+
+    function toLower(str) {
+        return str.toLowerCase();
+    }
+
+    // Convert time format ("7:00 AM", "13:00", "2:30 PM") to total minutes from midnight
+    function convertTime(input) {
+        input = trim(input);
+        let upper = input.toUpperCase();
+        let period = "";
+
+        if (upper.length >= 2) {
+            let lastTwo = upper.slice(-2);
+            if (lastTwo === "AM" || lastTwo === "PM") {
+                period = lastTwo;
+                upper = trim(upper.slice(0, -2));
+            }
+        }
+
+        let colonIdx = upper.indexOf(":");
+        if (colonIdx === -1) return -1;
+
+        try {
+            let hour = parseInt(upper.slice(0, colonIdx));
+            let minute = parseInt(upper.slice(colonIdx + 1));
+
+            if (isNaN(hour) || isNaN(minute) || minute < 0 || minute > 59) return -1;
+
+            if (period === "AM" || period === "PM") {
+                if (hour < 1 || hour > 12) return -1;
+                if (period === "AM" && hour === 12) hour = 0;
+                if (period === "PM" && hour !== 12) hour += 12;
+            } else {
+                if (hour < 0 || hour > 23) return -1;
+            }
+
+            return hour * 60 + minute;
+        } catch {
+            return -1;
+        }
+    }
+
+    function displayTime(totalMinutes) {
+        let hour = Math.floor(totalMinutes / 60);
+        let minute = totalMinutes % 60;
+        let period = hour >= 12 ? "PM" : "AM";
+        let displayHour = hour % 12;
+        if (displayHour === 0) displayHour = 12;
+        let formattedMinute = minute < 10 ? "0" + minute : minute;
+        return `${displayHour}:${formattedMinute} ${period}`;
+    }
+
+    function timeOverlaps(start1, end1, start2, end2) {
+        return start1 < end2 && end1 > start2;
+    }
+
+    function findProfessorIndex(name) {
+        let cleanName = toLower(trim(name));
+        return professors.findIndex(p => toLower(p.name) === cleanName);
+    }
+
+    // --- UI CONTROLS & EVENT HANDLERS ---
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-tabs button').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        if (tabId === 'tab-view') renderAllSchedules();
+    }
+
+    function toggleSubjectInput() {
+        let type = document.getElementById('schedType').value;
+        document.getElementById('subjectGroup').style.display = type === 'class' ? 'block' : 'none';
+    }
+
+    function toggleAbsenceTimeInputs() {
+        let isChecked = document.getElementById('specificTimeCheck').checked;
+        document.getElementById('absenceTimeSection').style.display = isChecked ? 'block' : 'none';
+    }
+
+    function showMessage(elementId, text, type) {
+        let el = document.getElementById(elementId);
+        el.className = `alert alert-${type}`;
+        el.innerText = text;
+        setTimeout(() => { el.className = ''; el.innerText = ''; }, 5000);
+    }
+
+    function handleAddSchedule() {
+        let name = trim(document.getElementById('profName').value);
+        let day = document.getElementById('schedDay').value;
+        let type = document.getElementById('schedType').value;
+        let subject = trim(document.getElementById('schedSubject').value);
+        let startTimeStr = document.getElementById('startTime').value;
+        let endTimeStr = document.getElementById('endTime').value;
+
+        if (!name) {
+            showMessage('addMessage', '❌ Professor name cannot be empty.', 'error');
+            return;
+        }
+
+        let startTime = convertTime(startTimeStr);
+        let endTime = convertTime(endTimeStr);
+
+        if (startTime === -1 || endTime === -1) {
+            showMessage('addMessage', '❌ Invalid time format. Examples: 7:00 AM, 13:00, or 2:30 PM.', 'error');
+            return;
+        }
+
+        if (endTime <= startTime) {
+            showMessage('addMessage', '❌ Ending time must be later than starting time.', 'error');
+            return;
+        }
+
+        if (type === 'class' && !subject) {
+            showMessage('addMessage', '❌ Subject cannot be empty for classes.', 'error');
+            return;
+        }
+
+        let profIndex = findProfessorIndex(name);
+        let currentProf;
+
+        if (profIndex !== -1) {
+            currentProf = professors[profIndex];
+        } else {
+            currentProf = { name: name, schedules: [] };
+            professors.push(currentProf);
+        }
+
+        // Check conflicts
+        let conflict = currentProf.schedules.some(sch => 
+            sch.day === day && timeOverlaps(sch.startTime, sch.endTime, startTime, endTime)
+        );
+
+        if (conflict) {
+            showMessage('addMessage', `❌ Error: Time slot overlaps with an existing schedule entry on ${day}!`, 'error');
+            return;
+        }
+
+        currentProf.schedules.push({
+            day: day,
+            startTime: startTime,
+            endTime: endTime,
+            isClass: type === 'class',
+            subject: type === 'class' ? subject : 'Vacant'
+        });
+
+        showMessage('addMessage', '✅ Schedule entry added successfully!', 'success');
+        document.getElementById('startTime').value = '';
+        document.getElementById('endTime').value = '';
+        document.getElementById('schedSubject').value = '';
+    }
+
+    function handleRecordAbsence() {
+        let name = trim(document.getElementById('absentProfName').value);
+        let day = document.getElementById('absenceDay').value;
+        let isSpecific = document.getElementById('specificTimeCheck').checked;
+        let reportBox = document.getElementById('absenceReport');
+
+        let profIndex = findProfessorIndex(name);
+        if (profIndex === -1) {
+            reportBox.style.display = 'block';
+            reportBox.innerHTML = '<p style="color:var(--danger)">❌ Professor not found.</p>';
+            return;
+        }
+
+        let absentProf = professors[profIndex];
+        let absenceClasses = [];
+
+        if (!isSpecific) {
+            absentProf.schedules.forEach(sch => {
+                if (sch.day === day && sch.isClass) {
+                    absenceClasses.push({ day: sch.day, startTime: sch.startTime, endTime: sch.endTime, subject: sch.subject });
+                }
+            });
+        } else {
+            let start = convertTime(document.getElementById('absenceStart').value);
+            let end = convertTime(document.getElementById('absenceEnd').value);
+            let subj = trim(document.getElementById('absenceSubject').value);
+
+            if (start === -1 || end === -1 || end <= start || !subj) {
+                reportBox.style.display = 'block';
+                reportBox.innerHTML = '<p style="color:var(--danger)">❌ Please enter valid times and subject for absence.</p>';
+                return;
+            }
+            absenceClasses.push({ day: day, startTime: start, endTime: end, subject: subj });
+        }
+
+        if (absenceClasses.length === 0) {
+            reportBox.style.display = 'block';
+            reportBox.innerHTML = `<p class="alert alert-info">ℹ️ No scheduled classes found for ${absentProf.name} on ${day}.</p>`;
+            return;
+        }
+
+        let html = `<h3>Absence Report: ${absentProf.name}</h3>`;
+
+        absenceClasses.forEach(absence => {
+            html += `<hr><p><strong>Class needing substitute:</strong> ${absence.subject} (${absence.day}, ${displayTime(absence.startTime)} - ${displayTime(absence.endTime)})</p>`;
+
+            let available = [];
+            professors.forEach((p, idx) => {
+                if (idx === profIndex) return;
+
+                let hasVacant = false;
+                let hasConflict = false;
+
+                p.schedules.forEach(sch => {
+                    if (sch.day !== absence.day) return;
+                    if (sch.isClass && timeOverlaps(sch.startTime, sch.endTime, absence.startTime, absence.endTime)) {
+                        hasConflict = true;
+                    }
+                    if (!sch.isClass && sch.startTime <= absence.startTime && sch.endTime >= absence.endTime) {
+                        hasVacant = true;
+                    }
+                });
+
+                if (!hasConflict && hasVacant) {
+                    available.push(p.name);
+                }
+            });
+
+            if (available.length === 0) {
+                html += `<p style="color:var(--danger)">❌ No available substitute professor found for this slot.</p>`;
+            } else {
+                html += `<p style="color:var(--success)">✅ <strong>Available Professors:</strong> ${available.join(', ')}</p>`;
+            }
+        });
+
+        reportBox.style.display = 'block';
+        reportBox.innerHTML = html;
+    }
+
+    function renderAllSchedules() {
+        let container = document.getElementById('allSchedulesContainer');
+        if (professors.length === 0) {
+            container.innerHTML = '<p>No professors have been added yet.</p>';
+            return;
+        }
+
+        let html = '';
+        professors.forEach(p => {
+            html += `<div style="margin-bottom: 15px;"><strong>Professor: ${p.name}</strong>`;
+            if (p.schedules.length === 0) {
+                html += `<div class="schedule-item">No schedule available.</div>`;
+            } else {
+                p.schedules.forEach(sch => {
+                    let typeLabel = sch.isClass ? `CLASS: ${sch.subject}` : 'VACANT';
+                    html += `<div class="schedule-item">${sch.day} | ${displayTime(sch.startTime)} - ${displayTime(sch.endTime)} | ${typeLabel}</div>`;
+                });
+            }
+            html += `</div>`;
+        });
+        container.innerHTML = html;
+    }
+</script>
+
+</body>
+</html>
