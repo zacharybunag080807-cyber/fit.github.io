@@ -1,1 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Budget Planning Task</title>
+    <style>
+        :root {
+            --primary: #1b4d3e;        /* Deep Forest Green */
+            --primary-hover: #123529;
+            --accent: #d4af37;         /* Rich Gold */
+            --accent-light: #f4ecd0;
+            --bg-color: #f4f7f5;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #d1ded8;
+            --success: #10b981;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(27, 77, 62, 0.08);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        header {
+            background: linear-gradient(135deg, #1b4d3e, #2c6b56);
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            margin: 0;
+            color: var(--accent-light);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 35px;
+        }
+
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #eaf1ed;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #f9fbf9;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-top: 3px solid var(--accent);
+        }
+
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .reflection-group {
+            margin-top: 20px;
+        }
+
+        .reflection-group label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Digital Budget Planning Task</h1>
+        <p>Plan Your Money With Purpose — Adulting Practice Moment</p>
+    </header>
+
+    <div class="content">
+        
+        <!-- INCOME SECTION -->
+        <section>
+            <h2>1. Estimated Monthly Income / Allowance</h2>
+            <table id="income-table">
+                <thead>
+                    <tr>
+                        <th>Source Description</th>
+                        <th style="width: 160px;">Amount (₱)</th>
+                        <th style="width: 90px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" value="Monthly Allowance / Salary"></td>
+                        <td><input type="number" class="income-input" value="6000" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addRow('income-table', 'income')">+ Add Income Source</button>
+        </section>
+
+        <!-- FIXED EXPENSES -->
+        <section>
+            <h2>2. Fixed Expenses (Food, Transport, Utilities, School)</h2>
+            <table id="fixed-table">
+                <thead>
+                    <tr>
+                        <th>Expense Description</th>
+                        <th style="width: 160px;">Amount (₱)</th>
+                        <th style="width: 90px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" value="Food / Meals"></td>
+                        <td><input type="number" class="fixed-input" value="1800" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Transportation"></td>
+                        <td><input type="number" class="fixed-input" value="900" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Internet / Load"></td>
+                        <td><input type="number" class="fixed-input" value="600" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="School Supplies / Projects"></td>
+                        <td><input type="number" class="fixed-input" value="500" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addRow('fixed-table', 'fixed')">+ Add Fixed Expense</button>
+        </section>
+
+        <!-- VARIABLE EXPENSES -->
+        <section>
+            <h2>3. Variable / Personal Expenses (Entertainment, Shopping, Hobbies)</h2>
+            <table id="variable-table">
+                <thead>
+                    <tr>
+                        <th>Expense Description</th>
+                        <th style="width: 160px;">Amount (₱)</th>
+                        <th style="width: 90px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" value="Entertainment / Leisure"></td>
+                        <td><input type="number" class="variable-input" value="400" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" value="Shopping & Hobbies"></td>
+                        <td><input type="number" class="variable-input" value="300" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addRow('variable-table', 'variable')">+ Add Variable Expense</button>
+        </section>
+
+        <!-- SAVINGS / EMERGENCY FUND -->
+        <section>
+            <h2>4. Savings or Emergency Fund Allocation</h2>
+            <table id="savings-table">
+                <thead>
+                    <tr>
+                        <th>Goal Description</th>
+                        <th style="width: 160px;">Amount (₱)</th>
+                        <th style="width: 90px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" value="Emergency Fund / General Savings"></td>
+                        <td><input type="number" class="savings-input" value="1000" oninput="calculateBudget()"></td>
+                        <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="addRow('savings-table', 'savings')">+ Add Savings Goal</button>
+        </section>
+
+        <!-- BUDGET SUMMARY TOTALS -->
+        <section>
+            <h2>Budget Summary & Totals</h2>
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Total Income</h3>
+                    <p id="total-income">0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Total Expenses</h3>
+                    <p id="total-expenses">0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Remaining Balance</h3>
+                    <p id="net-balance">0.00</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- WRITTEN REFLECTION SUMMARY -->
+        <section>
+            <h2>Budget Reflection Summary</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Answer the required reflection questions clearly[cite: 1]:</p>
+            
+            <div class="reflection-group">
+                <label>Your Financial Priorities[cite: 1]:</label>
+                <textarea placeholder="e.g., Ensuring core needs like food and transportation are fully covered before allocating funds to leisure or personal shopping."></textarea>
+            </div>
+
+            <div class="reflection-group">
+                <label>Why You Allocated Your Budget the Way You Did[cite: 1]:</label>
+                <textarea placeholder="e.g., Keeping fixed expenses predictable helps safeguard a fixed amount for emergency savings each month."></textarea>
+            </div>
+
+            <div class="reflection-group">
+                <label>Which Expenses Were Most Important to You[cite: 1]:</label>
+                <textarea placeholder="e.g., Food and stable internet/load were top priorities to maintain daily energy and sustain schoolwork/communication."></textarea>
+            </div>
+
+            <div class="reflection-group">
+                <label>What Challenges You Experienced While Planning Your Budget[cite: 1]:</label>
+                <textarea placeholder="e.g., Balancing limited allowance against rising transport costs required making smart trade-offs on non-essential entertainment spending."></textarea>
+            </div>
+        </section>
+
+        <div class="footer-note">
+            <p><em>"A good budget is realistic, balanced, and sustainable — not perfect[cite: 2]."</em></p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function calculateBudget() {
+        let sumClass = (className) => {
+            let inputs = document.querySelectorAll('.' + className);
+            let total = 0;
+            inputs.forEach(input => {
+                let val = parseFloat(input.value);
+                if (!isNaN(val)) total += val;
+            });
+            return total;
+        };
+
+        let income = sumClass('income-input');
+        let fixed = sumClass('fixed-input');
+        let variable = sumClass('variable-input');
+        let savings = sumClass('savings-input');
+
+        let totalExpenses = fixed + variable + savings;
+        let netBalance = income - totalExpenses;
+
+        document.getElementById('total-income').innerText = income.toFixed(2);
+        document.getElementById('total-expenses').innerText = totalExpenses.toFixed(2);
+        
+        let balanceEl = document.getElementById('net-balance');
+        balanceEl.innerText = netBalance.toFixed(2);
+        balanceEl.style.color = netBalance < 0 ? '#ef4444' : '#1b4d3e';
+    }
+
+    function addRow(tableId, type) {
+        let table = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+        let newRow = table.insertRow();
+        newRow.innerHTML = `
+            <td><input type="text" placeholder="New Entry"></td>
+            <td><input type="number" class="${type}-input" value="0" oninput="calculateBudget()"></td>
+            <td><button class="btn-secondary" onclick="deleteRow(this)">Delete</button></td>
+        `;
+        calculateBudget();
+    }
+
+    function deleteRow(btn) {
+        let row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+        calculateBudget();
+    }
+
+    window.onload = calculateBudget;
+</script>
+
+</body>
+</html>
